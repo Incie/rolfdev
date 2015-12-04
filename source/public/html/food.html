@@ -1,9 +1,128 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
 <head>
-<title>rolfdev - food</title>
+<meta charset="UTF-8">
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+
+<style>
+	body {
+		background-color:lightgray
+	}
+	.foody {font-size: 200% }
+	
+	.foodblock {
+		width: 100%;
+		font-size: 250%;
+		border-radius: 25px;
+		border: 1px solid #000000;
+		margin-top: 5px;
+		padding-top: 15px;
+		padding-bottom: 15px;
+		overflow:hidden;
+	}
+	
+	.foodname {
+		padding-left: 15px;
+		text-align:left; 
+		font-size:120%;
+	}
+	
+	.fooddate {
+		float: right;
+		text-align:right;
+		position:relative;
+		font-size:60%;
+		padding-right: 10px;
+		padding-top: 3px;
+	}
+</style>
 </head>
 <body>
-insert content
+	<div ng-app="foodynoms">
+		<div ng-controller="FoodController" >
+			<div ng-repeat="f in foodData" class="foodblock" ng-click="moreInfo($index)"> 
+				<span class="foodname">
+					{{f.name}}
+				</span>
+				<div id={{'info'+$index}}>
+					{{''}}
+				</div>
+		</div>
+	</div>
+  
+	<script>
+		angular.module('foodynoms', []).controller('FoodController', ['$scope', '$interval', function($scope, $interval){
+		
+			$scope.foodData = [{ name:"Brød-dings" ,ingredients:"1x Finbrød, Majones, 4x Egg, 1x Bog Skinke og Ost" ,description:""}, { name:"Dagmar's" ,ingredients:"" ,description:""}, { name:"Egg, bønner og bacon" ,ingredients:"" ,description:""}, { name:"Eggwiches" ,ingredients:"Brød, egg, ost og skinke" ,description:""}, { name:"Fiskegrateng" ,ingredients:"" ,description:""}, { name:"Fiskepinner" ,ingredients:"" ,description:""}, { name:"Fjordland Kjøttkaker" ,ingredients:"" ,description:""}, { name:"Frossen Pizza" ,ingredients:"" ,description:"Big one, grandis etc."}, { name:"Gryterett, Bolognese" ,ingredients:"" ,description:""}, { name:"Gryterett, Meksikansk" ,ingredients:"" ,description:""}, { name:"Gyros og Ris" ,ingredients:"Gyros; 2x Matfløte; Tomatpure; Ris" ,description:"Hell matfløte og ha i tomatpure i ei gryte. Stek kjøttet og legg i gryta. La det småkoke i 8-10min til sausen er lysoransje."}, { name:"Hamburger" ,ingredients:"" ,description:""}, { name:"Hjemmelagd Pizza" ,ingredients:"" ,description:""}, { name:"Kjøtt I Mørke" ,ingredients:"" ,description:""}, { name:"Kjøttkaker i brunsaus" ,ingredients:"Kjøttdeig, poteter og brunsaus" ,description:""}, { name:"Kylling og Ris" ,ingredients:"2x Halve Kyllinger; Ris; Bernaise Saus" ,description:"Varm opp ingredienser og server sammen."}, { name:"Laks og Poteter" ,ingredients:"" ,description:""}, { name:"Lasagne" ,ingredients:"" ,description:""}, { name:"Løvbiff, pommes frites og bernaise saus" ,ingredients:"" ,description:""}, { name:"Marinert (indre/ytre)filet av Okse" ,ingredients:"" ,description:""}, { name:"Marinert (indre/ytre)filet av Svin" ,ingredients:"" ,description:""}, { name:"Milano Pizza" ,ingredients:"" ,description:""}, { name:"Milano Restaurant" ,ingredients:"" ,description:"Spise ute på Milano restaurant"}, { name:"Mousakka" ,ingredients:"" ,description:""}, { name:"Pannekaker" ,ingredients:"" ,description:""}, { name:"Pannekaker (Amerikansk)" ,ingredients:"" ,description:""}, { name:"Pepperoni Baguette" ,ingredients:"Baguette, Pepperoni & Ost" ,description:"Assemble og stek i ovn i ~10min."}, { name:"Pulled Beef" ,ingredients:"Pulled Beef og Pommes Frites" ,description:"Pulled Beef med Pommes Frites"}, { name:"Pølse og Stappe" ,ingredients:"" ,description:""}, { name:"Sandwich stekt i egg" ,ingredients:"" ,description:""}, { name:"Siciliana" ,ingredients:"Sicilianapakke; 400g Kjøttdeig; Revet Ost" ,description:"Kok Spaghettien. Stek kjøttdeigen, og la den koke med sausen. Serveres med revet ost."}, { name:"Sommerkoteletter og potetsalat" ,ingredients:"" ,description:""}, { name:"Spaghetti ala Capri" ,ingredients:"" ,description:""}, { name:"Spaghetti og Kjøttboller" ,ingredients:"Spaghetti; 400g Kjøttdeig; Sauspakke" ,description:"Kokt Spaghetti, og lage kuler av kjøttdeig og legg de oppi sausen."}, { name:"Taco" ,ingredients:"400g Kjøttdeig; Pakke tacokrydder; Revet Ost; Tacosaus; Rømme" ,description:"Stek kjøttdeig og krydderet sammen."}, { name:"Taco (Gratinert)" ,ingredients:"400g Kjøttdeig; Krydderblanding; Revet Ost; Nachos" ,description:"Stek kjøttdeig med krydderet. Legg det i en ildfast form med nachos og legg revet ost oppå."}, { name:"Tomatsuppe og Egg" ,ingredients:"" ,description:""}];
+		
+			$scope.selectedElement = { id:'none' };
+			$scope.todaysDate = new Date();
+			
+			$scope.getDate = function(dateString){			
+				var split = dateString.split('/');
+				return new Date(split[0], split[1]-1, split[2]);
+			}
+			
+			$scope.dateEntry = function(dateString){
+				if( dateString == '' )
+					return dateString;
+					
+				return dateString + '['+$scope.getNumDaysSinceEaten(dateString)+']';
+			}
+			
+			$scope.daysEatenColor = function(dateString){
+				var daysSinceEaten = $scope.getNumDaysSinceEaten(dateString);
+				
+				console.log( daysSinceEaten, daysSinceEaten < 5 );
+				
+				if( daysSinceEaten === '' ) return 'red';
+					
+				daysSinceEaten = Number(daysSinceEaten);
+					
+				if( daysSinceEaten < 5 )return 'green';					
+				if( daysSinceEaten < 10 )return 'yellow';					
+				return 'red';
+			}			
+			
+			$scope.getNumDaysSinceEaten = function(dateString){
+				if( dateString == '<>' ){
+					return '';
+				}
+				
+				var date = $scope.getDate(dateString);
+				var numDays = Math.floor(($scope.todaysDate - date) / (1000*3600*24))
+				return numDays;
+			}
+			
+			$scope.clearElement = function(element) {
+				element.e.innerHTML = '';
+				element.id = 'none';
+			}
+			
+			$scope.moreInfo = function( id ) {
+				var divId = 'info'+id;
+				
+				if( $scope.selectedElement.id == divId ){
+					$scope.clearElement($scope.selectedElement);
+					return;
+				}
+				
+				if( $scope.selectedElement.id != 'none' )
+					$scope.clearElement($scope.selectedElement);
+				
+				
+				var food = $scope.foodData[id];
+				
+				$scope.selectedElement.id = divId;
+				$scope.selectedElement.e = document.getElementById(divId);
+				
+				$scope.selectedElement.e.innerHTML = '<hr>';
+				$scope.selectedElement.e.innerHTML += '<div> Beskrivelse: <br/>' + food.description + '</div>';
+				$scope.selectedElement.e.innerHTML += '<hr><div> Ingredienser: <br/>' + food.ingredients + '</div>';
+			};
+		}]);
+	</script>	 
+	</div>
+
 </body>
-</html>
+</html> 
