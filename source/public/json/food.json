@@ -1,0 +1,187 @@
+[
+  {
+    "name": "Brød-dings",
+    "ingredients": "1x Finbrød, Majones, 4x Egg, 1x Bog Skinke og Ost",
+    "description": ""
+  },
+  {
+    "name": "Dagmar's",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Egg, bønner og bacon",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Eggwiches",
+    "ingredients": "Brød, egg, ost og skinke",
+    "description": ""
+  },
+  {
+    "name": "Fiskegrateng",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Fiskepinner",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Fjordland Kjøttkaker",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Frossen Pizza",
+    "ingredients": "",
+    "description": "Big one, grandis etc."
+  },
+  {
+    "name": "Gryterett, Bolognese",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Gryterett, Meksikansk",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Gyros og Ris",
+    "ingredients": "Gyros; 2x Matfløte; Tomatpure; Ris",
+    "description": "Hell matfløte og ha i tomatpure i ei gryte. Stek kjøttet og legg i gryta. La det småkoke i 8-10min til sausen er lysoransje."
+  },
+  {
+    "name": "Hamburger",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Hjemmelagd Pizza",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Kjøtt I Mørke",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Kjøttkaker i brunsaus",
+    "ingredients": "Kjøttdeig, poteter og brunsaus",
+    "description": ""
+  },
+  {
+    "name": "Kylling og Ris",
+    "ingredients": "2x Halve Kyllinger; Ris; Bernaise Saus",
+    "description": "Varm opp ingredienser og server sammen."
+  },
+  {
+    "name": "Laks og Poteter",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Lasagne",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Løvbiff, pommes frites og bernaise saus",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Marinert (indre/ytre)filet av Okse",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Marinert (indre/ytre)filet av Svin",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Milano Pizza",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Milano Restaurant",
+    "ingredients": "",
+    "description": "Spise ute på Milano restaurant"
+  },
+  {
+    "name": "Mousakka",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Pannekaker",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Pannekaker (Amerikansk)",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Pepperoni Baguette",
+    "ingredients": "Baguette, Pepperoni & Ost",
+    "description": "Assemble og stek i ovn i ~10min."
+  },
+  {
+    "name": "Pulled Beef",
+    "ingredients": "Pulled Beef og Pommes Frites",
+    "description": "Pulled Beef med Pommes Frites"
+  },
+  {
+    "name": "Pølse og Stappe",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Sandwich stekt i egg",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Siciliana",
+    "ingredients": "Sicilianapakke; 400g Kjøttdeig; Revet Ost",
+    "description": "Kok Spaghettien. Stek kjøttdeigen, og la den koke med sausen. Serveres med revet ost."
+  },
+  {
+    "name": "Sommerkoteletter og potetsalat",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Spaghetti ala Capri",
+    "ingredients": "",
+    "description": ""
+  },
+  {
+    "name": "Spaghetti og Kjøttboller",
+    "ingredients": "Spaghetti; 400g Kjøttdeig; Sauspakke",
+    "description": "Kokt Spaghetti, og lage kuler av kjøttdeig og legg de oppi sausen."
+  },
+  {
+    "name": "Taco",
+    "ingredients": "400g Kjøttdeig; Pakke tacokrydder; Revet Ost; Tacosaus; Rømme",
+    "description": "Stek kjøttdeig og krydderet sammen."
+  },
+  {
+    "name": "Taco (Gratinert)",
+    "ingredients": "400g Kjøttdeig; Krydderblanding; Revet Ost; Nachos",
+    "description": "Stek kjøttdeig med krydderet. Legg det i en ildfast form med nachos og legg revet ost oppå."
+  },
+  {
+    "name": "Tomatsuppe og Egg",
+    "ingredients": "",
+    "description": ""
+  }
+]
