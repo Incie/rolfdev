@@ -22,14 +22,17 @@ var files = {
 };
 
 app.get('/', function(req, res){
+    console.log('/ ' + req.connection.remoteAddress );
 	res.sendFile(files.index);
 });
 
 app.get('/food', function(req, res){
+    console.log('/food ' + req.connection.remoteAddress );
 	res.sendFile(files.food);
 });
 
 app.get('/a/tree', function(req, res){
+    console.log('/a/tree ' + req.connection.remoteAddress );
     res.sendFile(files.tree);
 });
 
@@ -38,7 +41,7 @@ app.get('/crab', function(req, res){
 });
 
 app.get('/niz', function(req, res){
-  res.send('this page is also dedicated to crabs... I mean niz <winkyemote>');
+  res.send('this page is also dedicated to crabs... I mean niz');
 });
 
 app.get('/gar', function(req, res){
