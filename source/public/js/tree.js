@@ -1,6 +1,17 @@
 var treeObject = {};
 var tjs = {};
 
+var guiObject = {
+    minSizeMultiplier: 0.75,
+    maxSizeMultiplier: 0.80,
+    minAngle: 5,
+    maxAngle: 25,
+    generationLimit: 5,
+    generate: function() {
+        initScene();
+    }
+};
+
 function initThreeJS() {
     tjs.scene = new THREE.Scene();
     tjs.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -17,7 +28,7 @@ function initThreeJS() {
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.zIndex = 1000;
     stats.domElement.style.top = '0px';
-    stats.domElement.style.right = '0px';
+    stats.domElement.style.left = '0px';
     document.body.appendChild( stats.domElement );
     tjs.stats = stats;
 }
@@ -27,7 +38,10 @@ function rand(min,max){
 }
 
 var treeLimit = 30;
-function createBranch(parent, length, rotation){
+function createBranch(parent, length, rotation, generation){
+    var gen = generation || 1;
+
+
     var branchGeometry = new THREE.Geometry();
     branchGeometry.vertices.push(new THREE.Vector3(), new THREE.Vector3(0,length, 0));
     var branchMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
@@ -35,35 +49,49 @@ function createBranch(parent, length, rotation){
 
     parent.add(branchMesh);
 
-    branchMesh.rotation.z = rotation;
+    branchMesh.rotation.z = rotation * Math.PI / 180.0;
 
-    if( length < treeLimit )
+    if( gen >= guiObject.generationLimit)
         return;
 
     var newOrigin = new THREE.Object3D();
     newOrigin.position.y = length;
     branchMesh.add(newOrigin);
 
-    createBranch(newOrigin, length * rand(0.75, 0.80), rand(Math.PI / 4, Math.PI / 7));
-    createBranch(newOrigin, length * rand(0.75, 0.80), -rand(Math.PI / 5, Math.PI / 9));
+    var nextGeneration = gen + 1;
+    createBranch(newOrigin, length * rand(guiObject.minSizeMultiplier, guiObject.maxSizeMultiplier), rand(guiObject.minAngle, guiObject.maxAngle), nextGeneration);
+    createBranch(newOrigin, length * rand(guiObject.minSizeMultiplier, guiObject.maxSizeMultiplier), -rand(guiObject.minAngle, guiObject.maxAngle), nextGeneration);
 }
 
 function initScene() {
     var t0 = new Date();
 
+    tjs.scene.remove(tjs.scene.getObjectByName('tree'));
+
     var treeObject = new THREE.Object3D();
+    treeObject.name = 'tree';
     treeObject.position.x = window.innerWidth / 2;
 
-    var startingHeight = window.innerHeight / 5;
-    treeLimit = startingHeight * 0.10;
+    var startingHeight = (window.innerHeight / 5) * rand(guiObject.minSizeMultiplier, guiObject.maxSizeMultiplier);
+    treeLimit = 5;
     createBranch(treeObject, startingHeight, 0);
+
+    tjs.tree = treeObject;
     tjs.scene.add(treeObject);
 
     var t1 = new Date();
-    console.log( t1 - t0 );
+    console.log( 'time spent generating tree: ', t1 - t0 );
+}
 
-    //tjs.box = new THREE.Mesh( new THREE.BoxGeometry(10,10,10), new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true }));
-    //tjs.scene.add(tjs.box);
+function initGUI() {
+    var gui = new dat.GUI();
+
+    gui.add(guiObject, 'minAngle').min(1).max(100);
+    gui.add(guiObject, 'maxAngle').min(1).max(100);
+    gui.add(guiObject, 'minSizeMultiplier').min(0.1).max(0.9);
+    gui.add(guiObject, 'maxSizeMultiplier').min(0.1).max(0.9);
+    gui.add(guiObject, 'generationLimit').min(1).max(10).step(1);
+    gui.add(guiObject, 'generate');
 }
 
 function render() {
@@ -74,6 +102,7 @@ function render() {
 
 document.body.onload = function() {
     initThreeJS();
+    initGUI();
     initScene();
     render();
 };
