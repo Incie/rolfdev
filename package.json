@@ -1,0 +1,22 @@
+{
+  "name": "rolfdev",
+  "version": "0.0.1",
+  "description": "My site",
+  "main": "source/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Incie/rolfdev.git"
+  },
+  "author": "rolf",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Incie/rolfdev/issues"
+  },
+  "homepage": "https://github.com/Incie/rolfdev#readme",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
