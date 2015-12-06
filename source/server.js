@@ -6,7 +6,6 @@ var app = express();
 
 app.use(bodyParser.json({limit: '2mb'}));
 app.use(bodyParser.urlencoded({ extended: false, limit: '2mb'}));
-//app.use(cookieParser());
 
 var publicPath = path.join(__dirname, 'public');
 
@@ -18,7 +17,8 @@ var getAbsoluteHtmlPath = function(relativePath){
 
 var files = {
     index: getAbsoluteHtmlPath('index.html'),
-    food: getAbsoluteHtmlPath('food.html')
+    food: getAbsoluteHtmlPath('food.html'),
+    tree: getAbsoluteHtmlPath('tree.html')
 };
 
 app.get('/', function(req, res){
@@ -27,6 +27,10 @@ app.get('/', function(req, res){
 
 app.get('/food', function(req, res){
 	res.sendFile(files.food);
+});
+
+app.get('/a/tree', function(req, res){
+    res.sendFile(files.tree);
 });
 
 app.get('/crab', function(req, res){
