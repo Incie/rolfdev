@@ -41,6 +41,9 @@ function rand(min,max){
 
 var branchMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
 
+var lightGeometry = new THREE.PlaneGeometry(10,10);
+
+
 function createBranch(parent, parentLength, rotation, generation){
     var gen = generation || 1;
     var childLength = parentLength * 0.8;
@@ -49,9 +52,10 @@ function createBranch(parent, parentLength, rotation, generation){
     branchGeometry.vertices.push(new THREE.Vector3(), new THREE.Vector3(0,childLength, 0));
 
     var branchMesh = new THREE.Line(branchGeometry, branchMaterial);
+    branchMesh.name = 'branch';
     parent.add(branchMesh);
 
-    branchMesh.userData.seed = Math.random() * Math.PI;
+    branchMesh.userData.seed = Math.random() * (Math.PI/4);
     branchMesh.userData.rotation = rotation;
 
     branchMesh.rotation.z = rotation * Math.PI / 180.0;
@@ -67,6 +71,12 @@ function createBranch(parent, parentLength, rotation, generation){
     var nextGeneration = gen + 1;
     createBranch(branchMesh, childLength, 25, nextGeneration);
     createBranch(branchMesh, childLength, -25, nextGeneration);
+
+    var lightMesh = new THREE.Mesh(lightGeometry, new THREE.MeshBasicMaterial({color: Math.random()*0xFFFFFF, transparent: true, map: tjs.particleTexture}));
+    lightMesh.name = 'light';
+    lightMesh.rotation.z = Math.PI/2;
+    branchMesh.add(lightMesh);
+
 }
 
 function generateTree() {
@@ -97,8 +107,11 @@ function refreshBranch(branchMesh, parentLength, rotation, generation){
     branchMesh.visible = (generation <= guiObject.generationLimit);
 
     for( var i = 0; i < branchMesh.children.length; i += 1 ){
-        var multiplier = (i%2==0) ? 1 : -1;
-        refreshBranch(branchMesh.children[i], childLength, multiplier * rand(guiObject.minAngle, guiObject.maxAngle), generation + 1);
+        var child = branchMesh.children[i];
+        if( child.name == 'branch' ) {
+            var multiplier = (i % 2 == 0) ? 1 : -1;
+            refreshBranch(branchMesh.children[i], childLength, multiplier * rand(guiObject.minAngle, guiObject.maxAngle), generation + 1);
+        }
     }
 }
 
@@ -110,10 +123,13 @@ function refreshTree(treeObject){
 function updateBranch(branchObject, wind, generation){
     branchObject.visible = (generation <= guiObject.generationLimit);
     var windMultiplier = generation / guiObject.generationLimit;
-    branchObject.rotation.z = ( Math.PI * branchObject.userData.rotation / 180.0) +  windMultiplier * guiObject.windStrength * Math.sin(branchObject.userData.seed + wind);
+    branchObject.rotation.z = ( 0.5 * Math.PI * branchObject.userData.rotation / 180.0) +  windMultiplier * guiObject.windStrength * Math.sin(branchObject.userData.seed + wind);
 
     for( var i = 0; i < branchObject.children.length; i += 1 ){
-        updateBranch(branchObject.children[i], wind, generation + 1 );
+        var child = branchObject.children[i];
+
+        if( child.name == 'branch' )
+            updateBranch(child, wind, generation + 1 );
     }
 }
 
@@ -154,8 +170,21 @@ function render() {
 }
 
 document.body.onload = function() {
-    initThreeJS();
-    initGUI();
-    initScene();
-    render();
+    var textureLoader = new THREE.TextureLoader();
+
+    textureLoader.load('/public/img/a/particle.png',
+        function(texture) {
+            console.log('texture loaded');
+            console.log(texture);
+
+            tjs.particleTexture = texture;
+
+            initThreeJS();
+            initGUI();
+            initScene();
+            render();
+        },
+        function(){ console.log('progress loading texture'); },
+        function(){ console.log('error loading texture');  }
+    );
 };
