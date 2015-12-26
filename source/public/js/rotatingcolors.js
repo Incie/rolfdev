@@ -34,64 +34,85 @@ function generateRandomColor(){
     return new THREE.Color(r(), r(), r());
 }
 
+function newColor(seed){
+    var color = new THREE.Color(0,0,0);
+    return {
+        color: color,
+        initialColor: color,
+        targetColor: generateRandomColor(),
+        fraction: seed || 0.0
+    }
+}
+
+var colorPool = [ new THREE.Color(1,0,0), new THREE.Color(0,1,0), new THREE.Color(0,0,1)];
+var colors = [];
+
+function generateRandomColors(amount){
+    for( var c = 0; c < amount; c += 1 ){
+        colors.push( newColor(Math.random()) );
+    }
+}
+
+function rad(deg){
+    return deg * Math.PI / 180.0;
+}
 function initScene() {
+    var cos = Math.cos;
+    var sin = Math.sin;
+    var width = window.innerWidth / 2;
+    var height = window.innerHeight / 2;
+    var radius = height * 0.9;
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
-        new THREE.Vector3(0,0,0),
-        new THREE.Vector3(500, 0,0),
-        new THREE.Vector3(250, 500, 0)
+        new THREE.Vector3(width, height, 0),
+        new THREE.Vector3(width + radius*cos(rad(60)), height + radius*sin(rad(60)), 0),
+        new THREE.Vector3(width + radius*cos(rad(120)), height + radius*sin(rad(120)), 0),
+        new THREE.Vector3(width + radius*cos(rad(180)), height + radius*sin(rad(180)), 0),
+        new THREE.Vector3(width + radius*cos(rad(240)), height + radius*sin(rad(240)), 0),
+        new THREE.Vector3(width + radius*cos(rad(300)), height + radius*sin(rad(300)), 0),
+        new THREE.Vector3(width + radius*cos(rad(360)), height + radius*sin(rad(360)), 0)
     );
+    
+    generateRandomColors(geometry.vertices.length);
 
-    var face = new THREE.Face3(0,1,2);
-    var color = new THREE.Color(1,1,1);
-    face.vertexColors.push(color, color, color);
+    function createFace(i0, i1, i2){
+        var face = new THREE.Face3(i0, i1, i2);
+        face.vertexColors.push(colors[i0].color, colors[i1].color, colors[i2].color);
+        return face;        
+    }
 
-    geometry.faces.push( face );
+    geometry.faces.push( createFace(0,1,2) );
+    geometry.faces.push( createFace(0,2,3) );
+    geometry.faces.push( createFace(0,3,4) );
+    geometry.faces.push( createFace(0,4,5) );
+    geometry.faces.push( createFace(0,5,6) );
+    geometry.faces.push( createFace(0,6,1) );
 
-
-    var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide, vertexColors: THREE.VertexColors});
+    var material = new THREE.MeshBasicMaterial({side: THREE.FrontSide, vertexColors: THREE.VertexColors, wireframe: false});
     var mesh = new THREE.Mesh(geometry, material);
-
-    mesh.userData.targetColors = [generateRandomColor(), generateRandomColor(), generateRandomColor()];
-    mesh.userData.initialColors = [color, color, color];
-    mesh.userData.fractions = [0.0, 0.0, 0.0];
 
     tjs.mesh = mesh;
     tjs.scene.add(mesh);
-
-
-
-
-    var boxGeo = new THREE.BoxGeometry(100,100, 100);
-    var boxMat = new THREE.MeshBasicMaterial()
-    var boxMesh = new THREE.Mesh(boxGeo, boxMat);
-    boxMesh.position.set(500,500,0);
-    tjs.scene.add(boxMesh);
 }
 
 var updateColors = function(){
-    var mesh = tjs.mesh;
-    var vertexColors = mesh.geometry.faces[0].vertexColors;
-
-    var targetColors = mesh.userData.targetColors;
-    var initialColors = mesh.userData.initialColors;
-    var fractions = mesh.userData.fractions;
-
-    for( var i = 0; i < 3; ++i ){
-        fractions[i] += 1.1 * (1/60.0);
-
-        if( fractions[i] > 1.0 ) fractions[i] = 1.0;
-
-        vertexColors[i].r = initialColors[i].r + (targetColors[i].r - initialColors[i].r)*fractions[i];
-        vertexColors[i].g = initialColors[i].g + (targetColors[i].g - initialColors[i].g)*fractions[i];
-        vertexColors[i].b = initialColors[i].b + (targetColors[i].b - initialColors[i].b)*fractions[i];
-
-        if( fractions[i] >= 1.0 ){
-            fractions[i] = 0.0;
-            initialColors[i] = targetColors[i];
-            targetColors[i] = generateRandomColor();
+    colors.forEach( function(color){
+        color.fraction += 0.5 * (1/60.0);
+        
+        if( color.fraction >= 1.0 ){
+            color.fraction -= 1.0;
+            color.initialColor.set(color.targetColor);
+            color.targetColor = generateRandomColor();
         }
-    }
+        
+        color.color.setRGB(
+            color.initialColor.r + (color.targetColor.r - color.initialColor.r)*color.fraction,
+            color.initialColor.g + (color.targetColor.g - color.initialColor.g)*color.fraction,
+            color.initialColor.b + (color.targetColor.b - color.initialColor.b)*color.fraction              
+        );
+    });
+        
+    tjs.mesh.geometry.colorsNeedUpdate = true;
 };
 
 initThreeJS();
