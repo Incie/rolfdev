@@ -20,7 +20,7 @@ function initThreeJS() {
     tjs.renderer.setSize( window.innerWidth, window.innerHeight );
     // tjs.camera = new THREE.OrthographicCamera(0, window.innerWidth, window.innerHeight, 0, -1000, 1000);
     tjs.camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 1.0, 1000);
-    tjs.camera.position.set(0,0,5);
+    tjs.camera.position.set(0,0,9);
 
     tjs.scene.add(tjs.camera);
 
@@ -47,38 +47,53 @@ function initScene() {
         color: 'red', 
         side: THREE.DoubleSide, 
         transparent: true, 
-        opacity: 0.9,
-        specular: 0x666666,
-        shininess: 0.1,
+        opacity: 0.6,
+        specular: 0x444444,
+        emissive: 0x020202,
+        shininess: 15,
         shading: THREE.FlatShading
     }
     
-    var geometry = new THREE.OctahedronGeometry(1);
-    var material = new THREE.MeshPhongMaterial(materialProperties);
-    var rubyMesh = new THREE.Mesh(geometry, material);
-    tjs.ruby = rubyMesh;
-    tjs.scene.add(tjs.ruby);
+    tjs.gemContainer = new THREE.Object3D();
+    tjs.gemContainer.position.set(0,0,0);
+    tjs.scene.add(tjs.gemContainer);
     
-    var box = new THREE.Mesh(new THREE.BoxGeometry(100,100,100), new THREE.MeshBasicMaterial({color: 0xffffff}))
-    box.position.set(0,0,0);
-    tjs.scene.add(box);
+    var geometry = new THREE.OctahedronGeometry(0.5);
+    var material = new THREE.MeshPhongMaterial(materialProperties);
+    tjs.material = material;
+    
+    for( var x = -5; x < 5; x += 1 ){
+        for( var y = -5; y < 5; y += 1 ){
+            var rubyMesh = new THREE.Mesh(geometry, material);
+            rubyMesh.position.set(x,y,0);
+            rubyMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0.0);
+            rubyMesh.userData.xRot = Math.random()*0.02 + 0.01;
+            rubyMesh.userData.yRot = Math.random()*0.02 + 0.01;
+            rubyMesh.userData.zRot = 0.0;
+            console.log(rubyMesh.position);
+            tjs.gemContainer.add(rubyMesh);  
+        }
+    }
 }
 
 function initGUI() {
     var gui = new dat.GUI();
     
-    gui.add(tjs.ruby.material, 'wireframe');
-    gui.add(tjs.ruby.material, 'opacity').min(0).max(1).step(0.05);
-    gui.add(tjs.ruby.material, 'transparent');
-    gui.add(tjs.ruby.material, 'shininess').min(0).max(100).step(0.01);
-    gui.add(tjs.ruby.material, 'metal');
+    gui.add(tjs.material, 'wireframe');
+    gui.add(tjs.material, 'opacity').min(0).max(1).step(0.05);
+    gui.add(tjs.material, 'transparent');
+    gui.add(tjs.material, 'shininess').min(0).max(200).step(0.01);
+    gui.add(tjs.material, 'metal');
 }
 
 function render() {
     requestAnimationFrame(render);
     
-    tjs.ruby.rotation.y += 0.01;
-    tjs.ruby.rotation.z += 0.02;
+    tjs.gemContainer.children.forEach(function(gem){
+        gem.rotation.x += gem.userData.xRot;
+        gem.rotation.y += gem.userData.yRot; 
+        gem.rotation.z += gem.userData.zRot;
+    });
 
     tjs.renderer.render(tjs.scene, tjs.camera);
     tjs.stats.update();
