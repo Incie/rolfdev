@@ -2,3 +2,4 @@
 .idea/
 node_modules/
 rolfdev.iml
+npm-debug.log
