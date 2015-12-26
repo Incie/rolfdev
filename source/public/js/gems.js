@@ -36,15 +36,9 @@ function initThreeJS() {
     tjs.stats = stats;
 }
 
-function initScene() {
-    tjs.scene.add( new THREE.AmbientLight(0x404040) );
-    
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(-15,0,50); 
-    tjs.scene.add(light);
-    
-    var materialProperties = {
-        color: 'red', 
+function createMaterial(color){
+    return {
+        color: color, 
         side: THREE.DoubleSide, 
         transparent: true, 
         opacity: 0.6,
@@ -53,24 +47,36 @@ function initScene() {
         shininess: 15,
         shading: THREE.FlatShading
     }
+}
+
+function initScene(models) {
+    tjs.scene.add( new THREE.AmbientLight(0x404040) );
+    
+    var light = new THREE.PointLight(0xffffff);
+    light.position.set(-15,0,50); 
+    tjs.scene.add(light);
     
     tjs.gemContainer = new THREE.Object3D();
     tjs.gemContainer.position.set(0,0,0);
     tjs.scene.add(tjs.gemContainer);
     
-    var geometry = new THREE.OctahedronGeometry(0.5);
-    var material = new THREE.MeshPhongMaterial(materialProperties);
-    tjs.material = material;
+    
+    //    var materialProperties = createMaterial('green');
+    // var geometry = new THREE.OctahedronGeometry(0.5);
+    // var material = new THREE.MeshPhongMaterial(materialProperties);
+    // tjs.material = mesh.material;
     
     for( var x = -5; x < 5; x += 1 ){
         for( var y = -5; y < 5; y += 1 ){
-            var rubyMesh = new THREE.Mesh(geometry, material);
+            var modelIndex = Math.floor(Math.random() * 3);
+            
+            var rubyMesh = models[modelIndex].clone();
             rubyMesh.position.set(x,y,0);
             rubyMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0.0);
+            rubyMesh.rotation.set(Math.PI/2,0,0);
             rubyMesh.userData.xRot = Math.random()*0.02 + 0.01;
             rubyMesh.userData.yRot = Math.random()*0.02 + 0.01;
             rubyMesh.userData.zRot = 0.0;
-            console.log(rubyMesh.position);
             tjs.gemContainer.add(rubyMesh);  
         }
     }
@@ -79,11 +85,11 @@ function initScene() {
 function initGUI() {
     var gui = new dat.GUI();
     
-    gui.add(tjs.material, 'wireframe');
-    gui.add(tjs.material, 'opacity').min(0).max(1).step(0.05);
-    gui.add(tjs.material, 'transparent');
-    gui.add(tjs.material, 'shininess').min(0).max(200).step(0.01);
-    gui.add(tjs.material, 'metal');
+    // gui.add(tjs.material, 'wireframe');
+    // gui.add(tjs.material, 'opacity').min(0).max(1).step(0.05);
+    // gui.add(tjs.material, 'transparent');
+    // gui.add(tjs.material, 'shininess').min(0).max(200).step(0.01);
+    // gui.add(tjs.material, 'metal');
 }
 
 function render() {
@@ -100,6 +106,35 @@ function render() {
 }
 
 initThreeJS();
-initScene();
-initGUI();
-render();
+
+var jsonLoader = new THREE.JSONLoader();
+
+var gemModels = [];
+
+function initApp(){
+    initScene(gemModels);
+    initGUI();
+    render();
+}
+
+function loadModel(name, color){
+    function loaderFunction(geometry, materials){
+        var materialProperties = createMaterial(color);
+        var material = new THREE.MeshPhongMaterial(materialProperties);
+        var mesh = new THREE.Mesh(geometry, material);
+        
+        gemModels.push(mesh);
+        
+        if( gemModels.length == 3 ){
+            initApp();
+        }
+    }
+    
+    var url = '/public/models/' + name + '.json';
+    jsonLoader.load(url,loaderFunction);
+}
+
+loadModel('gem0', 'red');
+loadModel('gem1', 'green');
+loadModel('gem2', 'blue');
+
