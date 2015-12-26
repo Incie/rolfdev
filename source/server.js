@@ -19,7 +19,8 @@ var files = {
     index: getAbsoluteHtmlPath('index.html'),
     food: getAbsoluteHtmlPath('food.html'),
     tree: getAbsoluteHtmlPath('tree.html'),
-    colors: getAbsoluteHtmlPath('rotatingcolors.html')
+    colors: getAbsoluteHtmlPath('rotatingcolors.html'),
+    gems: getAbsoluteHtmlPath('gems.html')
 };
 
 app.get('/', function(req, res){
@@ -40,6 +41,11 @@ app.get('/a/tree', function(req, res){
 app.get('/a/colors', function(req, res){
    console.log('/a/rotatingcolors' + req.connection.remoteAddress );
     res.sendFile(files.colors);
+});
+
+app.get('/a/gems', function(req, res){
+   console.log('/a/gems' + req.connection.remoteAddress);
+   res.sendFile(files.gems); 
 });
 
 app.get('/crab', function(req, res){
