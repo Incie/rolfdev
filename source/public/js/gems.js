@@ -18,9 +18,8 @@ function initThreeJS() {
     tjs.scene = new THREE.Scene();
     tjs.renderer = new THREE.WebGLRenderer({ antialias: true });
     tjs.renderer.setSize( window.innerWidth, window.innerHeight );
-    // tjs.camera = new THREE.OrthographicCamera(0, window.innerWidth, window.innerHeight, 0, -1000, 1000);
-    tjs.camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 1.0, 1000);
-    tjs.camera.position.set(0,0,9);
+    tjs.camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 0.1, 1000);
+    tjs.camera.position.set(0,0,0);
 
     tjs.scene.add(tjs.camera);
 
@@ -59,26 +58,22 @@ function initScene(models) {
     tjs.gemContainer = new THREE.Object3D();
     tjs.gemContainer.position.set(0,0,0);
     tjs.scene.add(tjs.gemContainer);
-    
-    
-    //    var materialProperties = createMaterial('green');
-    // var geometry = new THREE.OctahedronGeometry(0.5);
-    // var material = new THREE.MeshPhongMaterial(materialProperties);
-    // tjs.material = mesh.material;
-    
-    for( var x = -5; x < 5; x += 1 ){
-        for( var y = -5; y < 5; y += 1 ){
-            var modelIndex = Math.floor(Math.random() * 3);
-            
-            var rubyMesh = models[modelIndex].clone();
-            rubyMesh.position.set(x,y,0);
-            rubyMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0.0);
-            rubyMesh.rotation.set(Math.PI/2,0,0);
-            rubyMesh.userData.xRot = Math.random()*0.02 + 0.01;
-            rubyMesh.userData.yRot = Math.random()*0.02 + 0.01;
-            rubyMesh.userData.zRot = 0.0;
-            tjs.gemContainer.add(rubyMesh);  
-        }
+
+    for( var i = 0; i < 3; i += 1 ){    
+        var modelIndex = i;
+        
+        var gemMesh = models[modelIndex].clone();
+        var angle = (2*Math.PI) * (i / 3);
+        gemMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0.0);
+                
+        var gemRotation = new THREE.Object3D();
+        var gemBucket = new THREE.Object3D();
+        gemRotation.add(gemBucket);
+        
+        gemBucket.userData.rotation = new THREE.Vector3(Math.random()*0.02 + 0.01, Math.random()*0.02 + 0.01, Math.random()*0.02 + 0.01 );
+        gemBucket.add(gemMesh);
+        gemBucket.position.set(Math.cos(angle),0,Math.sin(angle));
+        tjs.gemContainer.add(gemRotation);  
     }
 }
 
@@ -92,14 +87,36 @@ function initGUI() {
     // gui.add(tjs.material, 'metal');
 }
 
+var interpolator = {
+    startAngle: Math.PI / 2 - 2*Math.PI / 3,
+    endAngle: Math.PI / 2,
+    currentAngle: Math.PI / 2,
+    fraction: 0.0,
+    step: 0.05,
+    active: false  
+};
+
 function render() {
     requestAnimationFrame(render);
     
-    tjs.gemContainer.children.forEach(function(gem){
-        gem.rotation.x += gem.userData.xRot;
-        gem.rotation.y += gem.userData.yRot; 
-        gem.rotation.z += gem.userData.zRot;
+    tjs.gemContainer.children.forEach(function(gemObject){
+        var gem = gemObject.children[0];
+        gem.rotation.x += gem.userData.rotation.x;
+        gem.rotation.y += gem.userData.rotation.y;
+        gem.rotation.z += gem.userData.rotation.z;
     });
+    
+    if( interpolator.active ){
+        interpolator.fraction += interpolator.step;
+        if( interpolator.fraction >= 1.0 ){
+            interpolator.fraction = 1.0;
+            interpolator.active = false;
+        }
+        
+        interpolator.currentAngle = interpolator.startAngle + (interpolator.endAngle-interpolator.startAngle)*interpolator.fraction;
+    }
+    
+    tjs.gemContainer.rotation.y = interpolator.currentAngle;
 
     tjs.renderer.render(tjs.scene, tjs.camera);
     tjs.stats.update();
@@ -133,6 +150,20 @@ function loadModel(name, color){
     var url = '/public/models/' + name + '.json';
     jsonLoader.load(url,loaderFunction);
 }
+
+function startRotatingGems(e){
+   if( interpolator.active ) return;
+    
+    interpolator.active = true;
+    interpolator.fraction = 0.0;
+    interpolator.startAngle += 2*Math.PI / 3;
+    interpolator.endAngle += 2*Math.PI / 3;
+    interpolator.currentAngle = interpolator.startAngle;
+}
+
+tjs.renderer.domElement.addEventListener('mousedown', startRotatingGems);
+tjs.renderer.domElement.addEventListener('touchmove', startRotatingGems);
+
 
 loadModel('gem0', 'red');
 loadModel('gem1', 'green');
